@@ -1,0 +1,3 @@
+C:/dev/projects/RusFor/Tests/DOM/build/CMakeFiles/OrderBook.dir
+C:/dev/projects/RusFor/Tests/DOM/build/CMakeFiles/ALL_BUILD.dir
+C:/dev/projects/RusFor/Tests/DOM/build/CMakeFiles/ZERO_CHECK.dir
