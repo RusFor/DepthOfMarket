@@ -14,7 +14,9 @@ struct Order {
 	unsigned int price;
 	unsigned int amount;
 
-	bool operator <(Order& other);
-	bool operator >(Order& other);
+	bool operator <(const Order& other) const;
+	bool operator >(const Order& other) const;
+	bool operator ==(const Order& other) const;
+	bool operator !=(const Order& other) const;
 };
 

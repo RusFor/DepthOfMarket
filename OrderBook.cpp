@@ -46,30 +46,33 @@ bool OrderBook::DeleteOrder(unsigned int id) {
 	return true;
 }
 
-std::vector<std::tuple<unsigned int, Order::Type, Order*>> OrderBook::GetTopOrders(unsigned int count) {
-	std::vector<std::pair<unsigned int, Order*>> asks;
-	asks.reserve(asks_.size());
-	for(auto& [id, order] : asks_) {
-		asks.push_back(std::make_pair(id, &order));
+const Order* OrderBook::GetOrder(unsigned int id) const {
+	if(id >> 1 == 0) {
+		if(asks_.contains(id)) {
+			return &asks_.at(id);
+		}
+	} else {
+		if(bids_.contains(id)) {
+			return &bids_.at(id);
+		}
 	}
-	std::sort(asks.begin(), asks.end(), [](auto& left, auto& right) {return *left.second < *right.second; });
+	return nullptr;
+}
 
-	std::vector<std::pair<unsigned int, Order*>> bids;
-	bids.reserve(bids_.size());
-	for(auto& [id, order] : bids_) {
-		bids.push_back(std::make_pair(id, &order));
-	}
-	std::sort(bids.begin(), bids.end(), [](auto& left, auto& right) {return *left.second > *right.second; });
+std::vector<std::tuple<unsigned int, Order::Type, const Order*>> OrderBook::GetTopOrders(unsigned int count) const {
+	auto asks = GetSortedOrders(Order::Type::Ask);
+	auto bids = GetSortedOrders(Order::Type::Bid);
 
-	std::vector<std::tuple<unsigned int, Order::Type, Order*>> output;
+	std::vector<std::tuple<unsigned int, Order::Type, const Order*>> output;
 	output.reserve(count);
+
 	for(size_t i = 0; i < count; ++i) {
 		if(asks.size() > i) {
 			output.push_back(std::make_tuple(asks[i].first, Order::Type::Ask, asks[i].second));
 			if(bids.size() > i) {
 				output.push_back(std::make_tuple(bids[i].first, Order::Type::Bid, bids[i].second));
 				++i;
-			}			
+			}
 		} else if(bids.size() > i) {
 			output.push_back(std::make_tuple(bids[i].first, Order::Type::Bid, bids[i].second));
 		}
@@ -83,7 +86,7 @@ unsigned int OrderBook::AddAsk(Order& order) {
 		id = *asks_free_ids_.begin();
 		asks_free_ids_.erase(id);
 	} else if(!asks_.empty()) {
-		id = asks_.rbegin()->first + 2;
+		id = asks_.rbegin()->first + STEP;
 	}
 	asks_.emplace(id, std::move(order));
 	return id;
@@ -95,8 +98,30 @@ unsigned int OrderBook::AddBid(Order& order) {
 		id = *bids_free_ids_.begin();
 		bids_free_ids_.erase(id);
 	} else if(!bids_.empty()) {
-		id = bids_.rbegin()->first + 2;
+		id = bids_.rbegin()->first + STEP;
 	}
 	bids_.emplace(id, std::move(order));
 	return id;
+}
+
+std::vector<std::pair<unsigned int, const Order*>> OrderBook::GetSortedOrders(Order::Type type) const {
+	std::vector<std::pair<unsigned int, const Order*>> output;
+	if(type == Order::Type::Ask) {
+		output.reserve(asks_.size());
+		for(auto& [id, order] : asks_) {
+			output.push_back(std::make_pair(id, &order));
+		}
+		std::sort(output.begin(), output.end(), [](auto& left, auto& right) {
+			return *left.second < *right.second;
+		});
+	} else {
+		output.reserve(bids_.size());
+		for(auto& [id, order] : bids_) {
+			output.push_back(std::make_pair(id, &order));
+		}
+		std::sort(output.begin(), output.end(), [](auto& left, auto& right) {
+			return *left.second > *right.second;
+		});
+	}
+	return output;
 }
