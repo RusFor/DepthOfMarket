@@ -11,6 +11,10 @@ using namespace std::literals;
 
 
 int main() {
-
+	OrderBookTester tester;
+	tester.TestAddOrder();
+	tester.TestChangeAmountOfOrder();
+	tester.TestDeleteOrder();
+	tester.TestGetTopOrders();
 }
 

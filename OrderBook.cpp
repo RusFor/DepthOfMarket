@@ -14,7 +14,7 @@ unsigned int OrderBook::AddOrder(Order::Type type, Order& order) {
 
 bool OrderBook::ChangeAmountOfOrder(unsigned int id, unsigned int new_amount) {
 	std::map<unsigned int, Order>::iterator order;
-	if(id >> 1 == 0) {
+	if(!(id & 1)) {
 		order = asks_.find(id);
 		if(order == asks_.end()) {
 			return false;
@@ -30,7 +30,7 @@ bool OrderBook::ChangeAmountOfOrder(unsigned int id, unsigned int new_amount) {
 }
 
 bool OrderBook::DeleteOrder(unsigned int id) {
-	if(id >> 1 == 0) {
+	if(!(id & 1)) {
 		if(!asks_.contains(id)) {
 			return false;
 		}
@@ -47,7 +47,7 @@ bool OrderBook::DeleteOrder(unsigned int id) {
 }
 
 const Order* OrderBook::GetOrder(unsigned int id) const {
-	if(id >> 1 == 0) {
+	if(!(id & 1)) {
 		if(asks_.contains(id)) {
 			return &asks_.at(id);
 		}
@@ -69,11 +69,8 @@ std::vector<std::tuple<unsigned int, Order::Type, const Order*>> OrderBook::GetT
 	for(size_t i = 0; i < count; ++i) {
 		if(asks.size() > i) {
 			output.push_back(std::make_tuple(asks[i].first, Order::Type::Ask, asks[i].second));
-			if(bids.size() > i) {
-				output.push_back(std::make_tuple(bids[i].first, Order::Type::Bid, bids[i].second));
-				++i;
-			}
-		} else if(bids.size() > i) {
+		}
+		if(bids.size() > i) {
 			output.push_back(std::make_tuple(bids[i].first, Order::Type::Bid, bids[i].second));
 		}
 	}
