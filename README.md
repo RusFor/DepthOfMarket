@@ -1,9 +1,9 @@
 # DepthOfMarket
-completed test task about a stock order book
+Completed test task about a stock order book<br />
 
-git clone https://github.com/RusFor/DepthOfMarket.git
-cd DepthOfMarket
-mkdir build 
-cd ./build
-cmake ..
-cmake --build .
+git clone https://github.com/RusFor/DepthOfMarket.git<br />
+cd DepthOfMarket<br />
+mkdir build <br />
+cd ./build<br />
+cmake ..<br />
+cmake --build .<br />
